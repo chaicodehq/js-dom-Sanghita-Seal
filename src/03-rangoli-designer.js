@@ -71,24 +71,83 @@
  */
 export function addColors(element, ...colors) {
   // Your code here
+  //loop through the colors
+  //check if the color alreaduy exist in classList...
+  // if not ...then add the color to classList and count++
+
+  if (element === null || element === undefined) return -1;
+  let count = 0;
+  colors.forEach((color) => {
+    if (!element.classList.contains(color)) {
+      element.classList.add(color);
+      count++;
+    }
+  });
+  return count;
 }
 
 export function removeColors(element, ...colors) {
   // Your code here
+  //loop through els and classList.remove() for each color
+  //count++ on every remove
+
+  if (!element) return -1;
+  let count = 0;
+  colors.forEach((color) => {
+    if (element.classList.contains(color)) {
+      element.classList.remove(color);
+      count++;
+    }
+  });
+  return count;
 }
 
 export function togglePattern(element, pattern) {
   // Your code here
+  if (!element) return null;
+  element.classList.toggle(`pattern-${pattern}`);
+  if (element.classList.contains(`pattern-${pattern}`)) return true;
+  else return false;
 }
 
 export function hasDesign(element, designName) {
   // Your code here
+  if (!element) return false;
+  if (element.classList.contains(`design-${designName}`)) return true;
+  else return false;
 }
 
 export function replaceDesign(element, oldDesign, newDesign) {
   // Your code here
+  if (!element) return false;
+  if (element.classList.contains(`design-${oldDesign}`)) {
+    element.classList.remove(`design-${oldDesign}`);
+    element.classList.add(`design-${newDesign}`);
+    return true;
+  } else if (!element.classList.contains(`design-${oldDesign}`)) {
+    element.classList.add(`design-${newDesign}`);
+    return false;
+  } else {
+    return false;
+  }
 }
 
 export function getActiveColors(element) {
   // Your code here
+  // If no element → return []
+  // Loop through element.classList
+  // Filter classes starting with "color-"
+  // Extract only color name
+  // Push into array
+
+  if(!element) return [];
+
+  let result=[];
+   Array.from(element.classList).forEach(cls => {
+    if (cls.startsWith("color-")) {
+      result.push(cls.slice(6));
+    }
+  });
+
+  return result;
 }
