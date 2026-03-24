@@ -59,16 +59,92 @@
  */
 export function setupAddButton(button, thaliElement, itemName) {
   // Your code here
+  if (!button || !thaliElement || !itemName) return null;
+
+  const handler = function () {
+    const li = document.createElement("li");
+    li.textContent = itemName;
+    thaliElement.appendChild(li);
+  };
+  button.addEventListener("click", handler);
+  return function () {
+    button.removeEventListener("click", handler);
+  };
 }
 
 export function setupRemoveButton(button, thaliElement) {
   // Your code here
+  if (!button || !thaliElement) return null;
+  const handler = function () {
+    const last = thaliElement.lastElementChild;
+    if (last) last.remove();
+  };
+
+  button.addEventListener("click", handler);
+  return function () {
+    button.removeEventListener("click", handler);
+  };
 }
 
 export function setupToggleItem(button, thaliElement, itemName) {
   // Your code here
+  if (!thaliElement || !button || !itemName) return null;
+
+  const handler = function () {
+    const li = document.querySelector("li");
+    if (!li) {
+      const liCreate = document.createElement("li");
+      liCreate.textContent = itemName;
+      thaliElement.appendChild(liCreate);
+    } else {
+      li.remove();
+    }
+  };
+
+  button.addEventListener("click", handler);
+  return function () {
+    button.removeEventListener("click", handler);
+  };
 }
 
 export function createThaliManager(thaliElement, counterElement) {
   // Your code here
+  if (!thaliElement || !counterElement) return null;
+
+  function addItem(name) {
+  const li = document.createElement("li");
+  li.textContent = name;
+  thaliElement.appendChild(li);
+
+  counterElement.textContent = thaliElement.children.length;
+  return li;
 }
+  function removeItem(name) {
+    const items = thaliElement.querySelectorAll("li");
+   for(let li of items){
+     if (li.textContent === name) {
+      li.remove();
+      counterElement.textContent = thaliElement.children.length;
+      return true;
+    }
+   }
+    return false;
+  }
+  function getCount() {
+    return thaliElement.children.length;
+  }
+  function clear() {
+    thaliElement.innerHTML = "";
+    counterElement.textContent = 0;
+  }
+  return ({
+    addItem,
+    removeItem,
+    getCount,
+    clear,
+
+  });
+
+
+}
+
