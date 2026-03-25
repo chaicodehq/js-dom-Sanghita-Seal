@@ -68,12 +68,140 @@
  */
 export function setupGuestList(containerElement) {
   // Your code here
+  if(!containerElement) return null;
+
+  containerElement.addEventListener("click", (e)=>{
+    const btn= e.target.closest(".remove-btn");
+    if(btn){
+      const guestItem=btn.closest(".guest-item");
+      if(guestItem) guestItem.remove();
+    }
+  });
+
+  function addGuest(name, side){
+    const div = document.createElement("div");
+    div.classList.add("guest-item");
+    div.setAttribute("data-name", name);
+    div.setAttribute("data-side", side);
+    const span = document.createElement("span");
+    span.textContent =name;
+    const button = document.createElement("button");
+    button.classList.add("remove-btn");
+    button.textContent="Remove";
+
+    div.appendChild(span);
+    div.appendChild(button);
+    containerElement.appendChild(div); 
+    return div;
+  }
+  function removeGuest(name){
+    const guestList = containerElement.querySelectorAll('.guest-item');
+    for(let guest of guestList){
+      if(guest.getAttribute("data-name")===name){
+        guest.remove();
+        return true;
+      }
+    }
+    return false;
+
+  }
+  function getGuests(){
+    const guests= document.querySelectorAll(".guest-item");
+    const result=[];
+
+    guests.forEach((g)=>{
+      result.push({
+        name: g.getAttribute("data-name"),
+        side: g.getAttribute("data-side"),
+      })
+    });
+    return result;
+  }
+
+  return({
+    addGuest,
+    removeGuest,
+    getGuests,
+  })
 }
 
 export function setupThemeSelector(containerElement, previewElement) {
   // Your code here
+
+  //validation
+  if(!previewElement || !containerElement) return null;
+
+  //taking array of themes
+  const themes=["traditional", "modern", "royal"];
+
+  // making separate btns for each theme
+  themes.forEach((theme)=>{
+    const btn = document.createElement("button");
+    btn.classList.add("theme-btn");
+    btn.setAttribute("data-theme", theme);
+    btn.textContent=theme;
+    containerElement.appendChild(btn);
+
+  })
+
+  //event delegation : upon clicking on any child(button) of containerElement
+  //previewElement's classNAme and attribute set to theme
+  containerElement.addEventListener("click",(e)=>{
+    const btn=e.target.closest(".theme-btn");
+    const theme = btn.getAttribute("data-theme");
+    previewElement.className=theme;
+    previewElement.setAttribute("data-theme",theme);
+  });
+// Returns object with:
+//  *        getTheme(): returns previewElement's current data-theme value or null
+  function getTheme(){
+    return previewElement.getAttribute("data-theme") || null;
+  }
+
+  return({
+    getTheme,
+  })
 }
 
 export function setupCardEditor(cardElement) {
-  // Your code here
+  //validation
+  if (!cardElement) return null;
+
+
+  let currentEditing = null;
+
+  cardElement.addEventListener("click", (e) => {
+    const editable = e.target.closest("[data-editable]");
+
+    //  Clicked on editable field
+    if (editable) {
+      // remove previous editing
+      if (currentEditing) {
+        currentEditing.classList.remove("editing");
+        currentEditing.contentEditable = "false";
+      }
+
+      // set new editing
+      editable.contentEditable = "true";
+      editable.classList.add("editing");
+      currentEditing = editable;
+    } 
+    //Clicked outside editable
+    else if (e.target === cardElement) {
+      if (currentEditing) {
+        currentEditing.classList.remove("editing");
+        currentEditing.contentEditable = "false";
+        currentEditing = null;
+      }
+    }
+  });
+
+  function getContent(field) {
+    const el = cardElement.querySelector(`[data-editable="${field}"]`);
+    return el ? el.textContent : null;
+  }
+
+  return {
+    getContent,
+  };
 }
