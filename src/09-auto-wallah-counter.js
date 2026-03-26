@@ -88,28 +88,85 @@
  */
 export function findQueueContainer(element) {
   // Your code here
+  if (!element) return null;
+
+  const ancestor=element.closest(".queue-container");
+  if(!ancestor) return null;
+  return ancestor;
 }
 
 export function getNextInQueue(element) {
   // Your code here
+  if (!element) return null;
+
+  const nextElSibling=element.nextElementSibling;
+  if(!nextElSibling) return null;
+  return nextElSibling;
 }
 
 export function getPreviousInQueue(element) {
   // Your code here
+   if (!element) return null;
+
+  const prevElSibling=element.previousElementSibling;
+  if(!prevElSibling) return null;
+  return prevElSibling;
 }
 
 export function getQueuePosition(element) {
   // Your code here
+   if (!element || !element.parentNode) return -1;
+
+  const children=element.parentNode.children;
+
+
+  for (let i = 0; i < children.length; i++) {
+    if (children[i] === element) {
+      return i + 1; // 1-based index
+    }
+  }
+  return -1;
+
 }
 
 export function moveToFront(element) {
   // Your code here
+  if (!element || !element.parentNode) return false;
+
+  const parent= element.parentNode;
+  const siblings= parent.children;
+
+  if(parent.firstElementChild===element) return false;
+  parent.insertBefore(element, parent.firstChild);
+  return true;
 }
 
 export function removeFromQueue(element) {
   // Your code here
+  if (!element || !element.parentNode) return null;
+
+  element.parentNode.removeChild(element);
+  return element;
 }
 
 export function getQueueStats(queueContainer) {
   // Your code here
+  if(!queueContainer) return null;
+
+  const children = queueContainer.children;
+
+  let waiting=0, serving=0, completed=0;
+  for(let c of children){
+    if(c.classList.contains("waiting")) waiting++;
+    if(c.classList.contains("serving")) serving++;
+    if(c.classList.contains("completed")) completed++;
+
+  }
+
+  return ({
+    total: children.length,
+    waiting,
+    serving,
+    completed
+  });
 }
