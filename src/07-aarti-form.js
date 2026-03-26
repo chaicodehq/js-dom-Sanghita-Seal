@@ -9,17 +9,19 @@
  *
  * Functions:
  *
+ * https://www.freecodecamp.org/news/form-validation-in-javascript/
  *   1. validateName(name)
  *      - Name must be a string, 2-50 characters long
  *      - Only letters (a-z, A-Z) and spaces allowed
  *      - Returns { valid: true, error: null } if valid
  *      - Returns { valid: false, error: "error message" } if invalid
- *      - Error messages (Hinglish):
- *        - Not string: "Naam string hona chahiye"
- *        - Too short: "Naam mein kam se kam 2 characters hone chahiye"
+ *      - Error messages (hona chahiye"
+ *        - Too short: "Naam mein kamHinglish):
+ *        - Not string: "Naam string  se kam 2 characters hone chahiye"
  *        - Too long: "Naam 50 characters se zyada nahi ho sakta"
  *        - Invalid chars: "Naam mein sirf letters aur spaces allowed hain"
  *
+ * https://www.freecodecamp.org/news/how-to-validate-a-date-in-javascript/
  *   2. validateDate(dateString)
  *      - Must be a valid date string in YYYY-MM-DD format
  *      - Must be today or a future date (past dates not allowed)
@@ -85,20 +87,154 @@
  */
 export function validateName(name) {
   // Your code here
+  if (typeof name != "string") {
+    return {
+      valid: false,
+      error: "Naam string hona chahiye",
+    };
+  }
+
+  const trimmedName = name.trim();
+  if (trimmedName.length < 2) {
+    return {
+      valid: false,
+      error: "Naam mein kam se kam 2 characters hone chahiye",
+    };
+  }
+  if (trimmedName.length > 50) {
+    return {
+      valid: false,
+      error: "Naam 50 characters se zyada nahi ho sakta",
+    };
+  }
+  const regex = /^[A-Za-z\s]+$/;
+
+  if (!regex.test(trimmedName)) {
+    return {
+      valid: false,
+      error: "Naam mein sirf letters aur spaces allowed hain",
+    };
+  }
+
+  return {
+    valid: true,
+    error: null,
+  };
 }
 
 export function validateDate(dateString) {
-  // Your code here
+  //VAlidation
+  if (typeof dateString !== "string") {
+    return {
+      valid: false,
+      error: "Date string honi chahiye",
+    };
+  }
+  function isDateValid(dateString) {
+    return !isNaN(new Date(dateString));
+  }
+  if (!isDateValid(dateString)) {
+    return {
+      valid: false,
+      error: "Date YYYY-MM-DD format mein honi chahiye",
+    };
+  }
+
+  const inputDate = new Date(dateString);
+  const currentDate = new Date();
+
+  if (inputDate < currentDate) {
+    return {
+      valid: false,
+      error: "Date aaj ya future ki honi chahiye",
+    };
+  }
+  return {
+    valid: true,
+    error: null,
+  };
 }
 
 export function validateAartiType(type) {
   // Your code here
+  if (typeof type !== "string") {
+    return { valid: false, error: "Aarti type string hona chahiye" };
+  }
+
+  const types = ["morning", "evening", "special"];
+  if (types.includes(type) === false) {
+    return {
+      valid: false,
+      error: "Aarti type morning, evening, ya special mein se hona chahiye",
+    };
+  }
+
+  return { valid: true, error: null };
 }
 
 export function setupAartiForm(formElement, onSuccess, onError) {
   // Your code here
+  if(!formElement)  return null;
+  if(typeof onSuccess!=="function" || typeof onError!=="function") return null;
+  function handlerFn(e) {
+    e.preventDefault();
+
+    const name = formElement.elements.name.value;
+    const date = formElement.elements.date.value;
+    const aartiType = formElement.elements.aartiType.value;
+
+    const nameResult = validateName(name);
+    const dateResult = validateDate(date);
+    const typeResult = validateAartiType(aartiType);
+
+    const errors = [];
+
+    if (!nameResult.valid) errors.push(nameResult.error);
+    if (!dateResult.valid) errors.push(dateResult.error);
+    if (!typeResult.valid) errors.push(typeResult.error);
+
+    if (errors.length === 0) {
+      onSuccess({ name, date, aartiType });
+    } else {
+      onError(errors);
+    }
+  }
+  formElement.addEventListener("submit", handlerFn);
+
+  return function cleanup() {
+    formElement.removeEventListener("submit", handlerFn);
+  };
 }
 
 export function createBookingSummary(booking) {
   // Your code here
+  console.log(booking);
+  if (!booking || !booking.name || !booking.date || !booking.aartiType)
+    return null;
+
+  const { name, date, aartiType } = booking;
+  const div = document.createElement("div");
+  div.classList.add("booking-summary");
+
+  const h3 = document.createElement("h3");
+  h3.textContent = "Booking Confirmation";
+
+  const pName = document.createElement("p");
+  pName.classList.add("booking-name");
+  pName.textContent = `Bhakt: ${name}`;
+
+  const pDate = document.createElement("p");
+  pDate.classList.add("booking-date");
+  pDate.textContent = `Date: ${date}`;
+
+  const pType = document.createElement("p");
+  pType.classList.add("booking-type");
+  pType.textContent = `Aarti: ${aartiType}`;
+
+  div.appendChild(h3);
+  div.appendChild(pName);
+  div.appendChild(pDate);
+  div.appendChild(pType);
+
+  return div;
 }
