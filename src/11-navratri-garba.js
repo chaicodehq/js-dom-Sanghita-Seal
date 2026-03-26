@@ -1,3 +1,4 @@
+
 /**
  * 💃 Navratri Garba - insertBefore, cloneNode, replaceChild, removeChild
  *
@@ -90,24 +91,77 @@
  */
 export function insertDancer(stage, newDancer, referenceDancer) {
   // Your code here
+  if (!stage || !newDancer) return false;
+  if (!referenceDancer) stage.appendChild(newDancer);
+  else stage.insertBefore(newDancer, referenceDancer);
+  return true;
 }
 
 export function cloneDancer(dancer, deep) {
   // Your code here
+  if (!dancer) return null;
+
+  const clone = dancer.cloneNode(deep);
+  if (!!clone.id) {
+    clone.id = dancer.id + "-copy";
+  }
+  return clone;
 }
 
 export function replaceDancer(stage, oldDancer, newDancer) {
   // Your code here
+  if (!stage || !newDancer || !oldDancer) return null;
+
+  stage.replaceChild(newDancer, oldDancer);
+  return oldDancer;
 }
 
 export function removeDancer(stage, dancer) {
   // Your code here
+  if (!stage || !dancer) return null;
+  try {
+    const removeDancer = stage.removeChild(dancer);
+    return removeDancer;
+  } catch (error) {
+    return null;
+  }
 }
 
 export function rearrangeStage(stage, order) {
   // Your code here
+  // make arr of stage Children
+  // check if len of order !== length of arr=> return false
+  // validate indices of order
+  // remove all the children 
+  // reappend acc to order
+
+  if(!stage || !Array.isArray(order)) return false;
+
+  const children = Array.from(stage.children);
+  if(order.length!==children.length) return false;
+
+  for(let i of order){
+    if(typeof i !=="number" || i<0 || i>=children.length) return false;
+  }
+
+  while(stage.firstChild){
+    stage.removeChild(stage.firstChild);
+  }
+
+  order.forEach((i)=>{
+    stage.appendChild(children[i]);
+  });
+  return true;
+
 }
 
 export function duplicateFormation(stage) {
   // Your code here
+  if (!stage) return null;
+
+  const clone = stage.cloneNode(true);
+  if (!!stage.id) {
+    clone.id = stage.id + "-clone";
+  }
+  return clone;
 }
